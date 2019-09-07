@@ -18,7 +18,7 @@ SOURCES += $(IMGUI_DIR)/imgui.cpp
 SOURCES += $(IMGUI_DIR)/imgui_demo.cpp
 SOURCES += $(IMGUI_DIR)/imgui_draw.cpp
 SOURCES += $(IMGUI_DIR)/imgui_widgets.cpp
-OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
+OBJS = $(addprefix build/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))))
 # $(error objs = $(OBJS))
 UNAME_S := $(shell uname -s)
 
@@ -58,7 +58,7 @@ endif
 ifeq ($(UNAME_S), Darwin) #APPLE
 	ECHO_MESSAGE = "Mac OS X"
 	LIBS += -framework OpenGL -framework Cocoa -framework IOKit -framework CoreVideo `sdl2-config --libs`
-	LIBS += -L/usr/local/lib -L/opt/local/lib
+	LIBS += -L/usr/local/lib
 
 	CXXFLAGS += -I$(IMGUI_DIR)/examples/libs/gl3w `sdl2-config --cflags`
 	CXXFLAGS += -I/usr/local/include -I/opt/local/include
@@ -69,23 +69,27 @@ endif
 ## BUILD RULES
 ##---------------------------------------------------------------------
 
-%.o:%.cpp
+$(EXE): $(OBJS)
+	$(CXX) -o $@ $^ $(CXXFLAGS) $(LIBS)
+
+build:
+	mkdir build
+
+build/%.o:%.cpp build
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o:$(IMGUI_DIR)/%.cpp
+build/%.o:$(IMGUI_DIR)/%.cpp build
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o:$(IMGUI_DIR)/examples/%.cpp
+build/%.o:$(IMGUI_DIR)/examples/%.cpp build
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
-%.o:$(IMGUI_DIR)/examples/libs/gl3w/GL/%.c
+build/%.o:$(IMGUI_DIR)/examples/libs/gl3w/GL/%.c build
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 all: $(EXE)
 	@echo Build complete for $(ECHO_MESSAGE)
 
-$(EXE): $(OBJS)
-	$(CXX) -o $@ $^ $(CXXFLAGS) $(LIBS)
-
 clean:
 	rm -f $(EXE) $(OBJS)
+	rm -rf build
