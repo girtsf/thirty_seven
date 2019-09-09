@@ -18,6 +18,7 @@ SOURCES += $(IMGUI_DIR)/imgui.cpp
 SOURCES += $(IMGUI_DIR)/imgui_demo.cpp
 SOURCES += $(IMGUI_DIR)/imgui_draw.cpp
 SOURCES += $(IMGUI_DIR)/imgui_widgets.cpp
+SOURCES += third_party/fastled_hsv2rgb/hsv2rgb.cpp
 OBJS = $(addprefix build/, $(addsuffix .o, $(basename $(notdir $(SOURCES)))))
 # $(error objs = $(OBJS))
 UNAME_S := $(shell uname -s)
@@ -85,6 +86,9 @@ build/%.o:$(IMGUI_DIR)/examples/%.cpp build
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 build/%.o:$(IMGUI_DIR)/examples/libs/gl3w/GL/%.c build
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+$(OUT_DIR)/%.o:third_party/fastled_hsv2rgb/%.cpp $(OUT_DIR)/.f
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 all: $(EXE)
