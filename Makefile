@@ -10,7 +10,7 @@ EXE = thirty_seven
 IMGUI_DIR = third_party/imgui
 OUT_DIR := build
 
-SOURCES = main.cpp
+SOURCES = main.cpp pattern.cpp
 SOURCES += $(IMGUI_DIR)/examples/imgui_impl_sdl.cpp
 SOURCES += $(IMGUI_DIR)/examples/imgui_impl_opengl3.cpp
 SOURCES += $(IMGUI_DIR)/imgui.cpp

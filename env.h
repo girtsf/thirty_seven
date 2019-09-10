@@ -1,3 +1,9 @@
+#pragma once
+
+#include <cstdint>
+
+namespace thirty_seven {
+
 // Environment.
 //
 // Probably just time, but maybe we'll have something else in here too?
@@ -12,3 +18,5 @@ class Env {
  private:
   uint32_t us_;
 };
+
+}  // namespace thirty_seven

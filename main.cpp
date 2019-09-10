@@ -13,48 +13,10 @@
 
 // Our stuff.
 #include "env.h"
-#include "pixels.h"
+#include "pattern.h"
+#include "patterns/wavy_colors.h"
 
-class Pattern {
- public:
-  static const int kPixelCount = 37;
-  static const int kRingCount = 4;
-  static const int kPixelCountPerRing[kRingCount];
-
-  // Updates pixels for a new frame.
-  virtual void Update(const Env& env) = 0;
-
-  // Given LED count [0..kPixelCount-1), return which ring it is in, and the
-  // number in the ring.
-  static void GetPos(int num, int* ring, int* in_ring) {
-    for (*ring = 0; *ring < kRingCount; (*ring)++) {
-      if (num < kPixelCountPerRing[*ring]) {
-        *in_ring = num;
-        return;
-      }
-      num -= kPixelCountPerRing[*ring];
-    }
-    assert(false);
-  }
-
-  const thirty_seven::RGB& pixel(int i) const { return pixels_[i]; }
-
- protected:
-  thirty_seven::RGB pixels_[kPixelCount];
-};
-
-const int Pattern::kPixelCountPerRing[kRingCount] = {1, 6, 12, 18};
-
-class AllRed : public Pattern {
- public:
-  void Update(const Env& env) final {
-    for (int i = 0; i < kPixelCount; ++i) {
-      // int x = (micros() / 1000) % 256;
-      int x = (i * 10 + env.ms() / 8) % 256;
-      pixels_[i].SetHSV(x, 255, 255);
-    }
-  };
-};
+namespace thirty_seven {
 
 void DrawPattern(const Pattern& pattern) {
   ImGui::SetNextWindowSize(ImVec2(600, 600));
@@ -86,6 +48,8 @@ void DrawPattern(const Pattern& pattern) {
   }
   ImGui::End();
 }
+
+}  // namespace thirty_seven
 
 // Main code
 int main(int, char**) {
@@ -151,7 +115,7 @@ int main(int, char**) {
   ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
   // Main loop
-  AllRed pattern;
+  thirty_seven::WavyColors pattern;
   bool done = false;
   while (!done) {
     // Poll and handle events (inputs, window resize, etc.)
@@ -184,9 +148,9 @@ int main(int, char**) {
     // Uncomment to show demo window.
     // ImGui::ShowDemoWindow(nullptr);
 
-    Env env(clock_gettime_nsec_np(CLOCK_REALTIME) / 1000);
+    thirty_seven::Env env(clock_gettime_nsec_np(CLOCK_REALTIME) / 1000);
     pattern.Update(env);
-    DrawPattern(pattern);
+    thirty_seven::DrawPattern(pattern);
 
     // Rendering
     ImGui::Render();
