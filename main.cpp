@@ -1,8 +1,11 @@
 #include <time.h>
+#include <array>
 #include <cassert>
 #include <cmath>
 #include <cstdint>
 #include <cstdio>
+#include <memory>
+#include <vector>
 
 #include <GL/gl3w.h>
 #include <SDL.h>
@@ -14,9 +17,30 @@
 // Our stuff.
 #include "env.h"
 #include "pattern.h"
+#include "patterns/smiley.h"
 #include "patterns/wavy_colors.h"
 
+namespace {
+std::vector<std::unique_ptr<thirty_seven::Pattern>> patterns;
+int current_pattern_idx = 0;
+}  // namespace
+
 namespace thirty_seven {
+
+void DrawPatternSelectionWindow() {
+  std::vector<std::string> names;
+  std::vector<const char*> name_ptrs;
+  for (const auto& ptr : patterns) {
+    names.push_back(ptr->name());
+  }
+  for (const auto& name : names) {
+    name_ptrs.push_back(name.data());
+  }
+  ImGui::Begin("patterns");
+  ImGui::ListBox("choose pattern", &current_pattern_idx, name_ptrs.data(),
+                 name_ptrs.size());
+  ImGui::End();
+}
 
 void DrawPattern(const Pattern& pattern) {
   ImGui::SetNextWindowSize(ImVec2(600, 600));
@@ -114,8 +138,12 @@ int main(int, char**) {
   // bool show_another_window = false;
   ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+  // Instantiate patterns
+  patterns.emplace_back(new thirty_seven::WavyColors());
+  patterns.emplace_back(new thirty_seven::Smiley());
+
   // Main loop
-  thirty_seven::WavyColors pattern;
+
   bool done = false;
   while (!done) {
     // Poll and handle events (inputs, window resize, etc.)
@@ -149,8 +177,10 @@ int main(int, char**) {
     // ImGui::ShowDemoWindow(nullptr);
 
     thirty_seven::Env env(clock_gettime_nsec_np(CLOCK_REALTIME) / 1000);
-    pattern.Update(env);
-    thirty_seven::DrawPattern(pattern);
+    thirty_seven::Pattern* pattern = patterns[current_pattern_idx].get();
+    pattern->Update(env);
+    thirty_seven::DrawPatternSelectionWindow();
+    thirty_seven::DrawPattern(*pattern);
 
     // Rendering
     ImGui::Render();

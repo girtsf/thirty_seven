@@ -13,6 +13,11 @@ class RGB {
   RGB() {}
   RGB(uint8_t r, uint8_t g, uint8_t b) : r(r), g(g), b() {}
 
+  void SetRGB(uint8_t r, uint8_t g, uint8_t b) {
+    this->r = r;
+    this->g = g;
+    this->b = b;
+  }
   void SetHSV(uint8_t h, uint8_t s, uint8_t v) { hsv2rgb(h, s, v, &r, &g, &b); }
 
   uint8_t r = 0, g = 0, b = 0;

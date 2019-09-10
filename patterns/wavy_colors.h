@@ -12,6 +12,7 @@ class WavyColors : public Pattern {
       pixels_[i].SetHSV(x, 255, 255);
     }
   };
+  std::string name() const final { return "WavyColors"; }
 };
 
 }  // namespace thirty_seven
