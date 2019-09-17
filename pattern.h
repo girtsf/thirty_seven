@@ -35,10 +35,10 @@ class Pattern {
     assert(false);
   }
 
-  const thirty_seven::RGB& pixel(int i) const { return pixels_[i]; }
+  const RGB& pixel(int i) const { return pixels_[i]; }
 
  protected:
-  thirty_seven::RGB pixels_[kPixelCount];
+  RGB pixels_[kPixelCount];
 };
 
 }  // namespace thirty_seven
