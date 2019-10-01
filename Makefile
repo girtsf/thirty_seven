@@ -8,6 +8,7 @@
 
 EXE = thirty_seven
 IMGUI_DIR = third_party/imgui
+FMT_DIR = third_party/fmt
 OUT_DIR := build
 
 SOURCES = main.cpp pattern.cpp
@@ -18,13 +19,14 @@ SOURCES += $(IMGUI_DIR)/imgui_demo.cpp
 SOURCES += $(IMGUI_DIR)/imgui_draw.cpp
 SOURCES += $(IMGUI_DIR)/imgui_widgets.cpp
 SOURCES += third_party/fastled_hsv2rgb/hsv2rgb.cpp
+SOURCES += $(FMT_DIR)/src/format.cc
 
 DEFINES =
 
 OBJS = $(addprefix build/,$(addsuffix .o,$(SOURCES)))
 UNAME_S := $(shell uname -s)
 
-INCLUDE_DIRS = . $(IMGUI_DIR) $(IMGUI_DIR)/examples
+INCLUDE_DIRS = . $(IMGUI_DIR) $(IMGUI_DIR)/examples $(FMT_DIR)/include
 
 CCFLAGS = $(addprefix -I,$(INCLUDE_DIRS)) $(addprefix -D,$(DEFINES))
 DEPFLAGS += -MT $$@ -MMD -MP -MF $(OUT_DIR)/$$<.d
@@ -84,6 +86,7 @@ $(1):
 endef
 
 $(foreach src,$(filter %.cpp,$(SOURCES)),$(eval $(call gen_compile_rule,$(src),CXX)))
+$(foreach src,$(filter %.cc,$(SOURCES)),$(eval $(call gen_compile_rule,$(src),CXX)))
 $(foreach src,$(filter %.c,$(SOURCES)),$(eval $(call gen_compile_rule,$(src),CC)))
 
 $(foreach dir,$(sort $(foreach src,$(SOURCES),$(dir $(OUT_DIR)/$(src)))),$(eval $(call gen_mkdir,$(dir))))
