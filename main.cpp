@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstdio>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include <GL/gl3w.h>
@@ -42,7 +43,8 @@ void DrawPatternSelectionWindow() {
   ImGui::End();
 }
 
-void DrawPattern(const Pattern& pattern) {
+std::string DrawPattern(const Pattern& pattern) {
+  std::string debug_text;
   ImGui::SetNextWindowSize(ImVec2(600, 600));
   ImGui::Begin("demo");
 
@@ -57,6 +59,9 @@ void DrawPattern(const Pattern& pattern) {
 
   const int kBetweenRings = 80;
   const int kRadius = 30;
+  auto mouse_pos = ImGui::GetMousePos();
+  debug_text += "abs mouse pos: " + std::to_string(mouse_pos.x) + "," +
+                std::to_string(mouse_pos.y) + "\n";
 
   for (int i = 0; i < Pattern::kPixelCount; ++i) {
     int ring, in_ring;
@@ -70,6 +75,13 @@ void DrawPattern(const Pattern& pattern) {
     draw_list->AddCircleFilled(ImVec2(x, y), kRadius,
                                IM_COL32(pixel.r, pixel.g, pixel.b, 255), 20);
   }
+  ImGui::End();
+  return debug_text;
+}
+
+void DrawDebugWindow(const std::string& txt) {
+  ImGui::Begin("debug");
+  ImGui::TextUnformatted(txt.c_str());
   ImGui::End();
 }
 
@@ -180,7 +192,8 @@ int main(int, char**) {
     thirty_seven::Pattern* pattern = patterns[current_pattern_idx].get();
     pattern->Update(env);
     thirty_seven::DrawPatternSelectionWindow();
-    thirty_seven::DrawPattern(*pattern);
+    std::string debug_text = thirty_seven::DrawPattern(*pattern);
+    thirty_seven::DrawDebugWindow(debug_text);
 
     // Rendering
     ImGui::Render();
