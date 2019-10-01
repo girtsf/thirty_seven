@@ -22,6 +22,35 @@ class Pattern {
   // Returns the name of the current pattern.
   virtual std::string name() const = 0;
 
+  inline int GetStartingPixelInRing(int ring) {
+    switch (ring) {
+      case 0:
+        return 0;
+      case 1:
+        return 1;
+      case 2:
+        return 1 + 6;
+      case 3:
+        return 1 + 6 + 12;
+      default:
+        assert(false);
+    }
+  }
+
+  void SetRingRGB(int ring, uint8_t r, uint8_t g, uint8_t b) {
+    for (int i = 0, pix = GetStartingPixelInRing(ring);
+         i < kPixelCountPerRing[ring]; ++i, ++pix) {
+      pixels_[pix].SetRGB(r, g, b);
+    }
+  }
+
+  void SetRingHSV(int ring, uint8_t h, uint8_t s, uint8_t v) {
+    for (int i = 0, pix = GetStartingPixelInRing(ring);
+         i < kPixelCountPerRing[ring]; ++i, ++pix) {
+      pixels_[pix].SetHSV(h, s, v);
+    }
+  }
+
   // Given LED count [0..kPixelCount-1), return which ring it is in, and the
   // number in the ring.
   static void GetPos(int num, int* ring, int* in_ring) {

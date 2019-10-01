@@ -18,8 +18,10 @@
 // Our stuff.
 #include "env.h"
 #include "pattern.h"
+#include "patterns/moving_lights.h"
 #include "patterns/smiley.h"
 #include "patterns/wavy_colors.h"
+#include "patterns/zooom.h"
 
 namespace {
 std::vector<std::unique_ptr<thirty_seven::Pattern>> patterns;
@@ -153,6 +155,8 @@ int main(int, char**) {
   // Instantiate patterns
   patterns.emplace_back(new thirty_seven::WavyColors());
   patterns.emplace_back(new thirty_seven::Smiley());
+  patterns.emplace_back(new thirty_seven::Zooom());
+  patterns.emplace_back(new thirty_seven::MovingLights());
 
   // Main loop
 
