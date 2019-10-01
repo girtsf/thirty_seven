@@ -74,8 +74,25 @@ std::string DrawPattern(const Pattern& pattern) {
                       Pattern::kPixelCountPerRing[ring] * 2 * M_PI;
     int x = middle.x + sinf(angle_rad) * ring_diameter;
     int y = middle.y - cosf(angle_rad) * ring_diameter;
+
     draw_list->AddCircleFilled(ImVec2(x, y), kRadius,
                                IM_COL32(pixel.r, pixel.g, pixel.b, 255), 20);
+
+    if (ImGui::IsMousePosValid(&mouse_pos)) {
+      // Is mouse inside this circle?
+      int dist_squared = (x - mouse_pos.x) * (x - mouse_pos.x) +
+                         (y - mouse_pos.y) * (y - mouse_pos.y);
+      if (dist_squared < (kRadius * kRadius)) {
+        // Make white outer circle.
+        draw_list->AddCircle(ImVec2(x, y), kRadius + 2,
+                             IM_COL32(255, 255, 255, 255), 20, 2);
+        char label[8];
+        sprintf(label, "%02d", i);
+        auto sz = ImGui::CalcTextSize("ZZ");
+        draw_list->AddText(ImVec2(x - sz.x / 2, y - sz.y / 2),
+                           IM_COL32(255, 255, 255, 255), label);
+      }
+    }
   }
   ImGui::End();
   return debug_text;
